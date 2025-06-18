@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EspanolPro - Learn Spanish Like a Pro!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation" aria-label="Main Navigation">
+        <div class="container">
+            <a class="navbar-brand" href="#" aria-label="EspanolPro Home">
+                <i class="fas fa-language"></i> EspanolPro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home" aria-label="Home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#modules" aria-label="Modules">Modules</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#progress" aria-label="Progress">Progress</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#profile" aria-label="Profile">Profile</a>
+                    </li>
+                    <!-- Auth Buttons (shown when not logged in) -->
+                    <li class="nav-item" id="auth-buttons">
+                        <button class="btn btn-outline-light btn-sm me-2" onclick="openLoginModal()">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="openSignupModal()">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </button>
+                    </li>
+                    <!-- User Menu (shown when logged in) -->
+                    <li class="nav-item d-none" id="user-menu">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User" alt="Profile" class="rounded-circle me-2" width="24" height="24">
+                                <span id="user-name">User</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="openProfileModal()"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="openSettingsModal()"><i class="fas fa-cog"></i> Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm ms-2" id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Section (hidden by default, shown when logged in) -->
+    <section id="profileSection" class="profile-section container mt-5 d-none">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card profile-card p-4">
+                    <div class="text-center mb-3">
+                        <div class="profile-pic-wrapper">
+                            <img id="profilePic" src="https://ui-avatars.com/api/?name=User" alt="Profile Picture" class="rounded-circle mb-2" width="100" height="100">
+                            <input type="file" id="profilePicInput" accept="image/*" class="form-control d-none">
+                            <button class="btn btn-sm btn-outline-primary mt-2" id="changePicBtn" type="button">Change Picture</button>
+                        </div>
+                    </div>
+                    <h4 class="text-center" id="profileName">User Name</h4>
+                    <p class="text-center text-muted" id="profileEmail">user@email.com</p>
+                    <div class="mb-3">
+                        <label for="profileNewPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="profileNewPassword" placeholder="Enter new password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="profileConfirmPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="profileConfirmPassword" placeholder="Confirm new password">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="profileDarkMode">
+                        <label class="form-check-label" for="profileDarkMode">Enable Dark Mode</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="profileSound">
+                        <label class="form-check-label" for="profileSound">Enable Sound</label>
+                    </div>
+                    <button class="btn btn-primary w-100" id="saveProfileBtn" type="button">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Profile Section -->
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">My Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="profile-pic-wrapper mb-3">
+                                <img id="modalProfilePic" src="https://ui-avatars.com/api/?name=User" alt="Profile Picture" class="rounded-circle mb-3" width="150" height="150" style="border: 3px solid var(--primary-color);">
+                                <input type="file" id="modalProfilePicInput" accept="image/*" class="form-control d-none">
+                                <button class="btn btn-outline-primary btn-sm" id="modalChangePicBtn" type="button">
+                                    <i class="fas fa-camera"></i> Change Picture
+                                </button>
+                            </div>
+                            <h5 id="profileName">User Name</h5>
+                            <p class="text-muted" id="profileEmail">user@email.com</p>
+                        </div>
+                        <div class="col-md-8">
+                            <form id="profileForm">
+                                <div class="mb-3">
+                                    <label for="profileNameInput" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="profileNameInput" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="profileEmailInput" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="profileEmailInput" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newPassword" class="form-label">New Password (leave blank to keep current)</label>
+                                    <input type="password" class="form-control" id="newPassword" minlength="6">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirmNewPassword">
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="profileDarkMode">
+                                    <label class="form-check-label" for="profileDarkMode">Enable Dark Mode</label>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="profileSound">
+                                    <label class="form-check-label" for="profileSound">Enable Sound</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button for AI Chat -->
+    <button class="fab-chat" aria-label="Open Spanish Practice Chat" onclick="openAIChat()">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">¡Aprende Español de Forma Divertida!</h1>
+                    <p class="hero-subtitle">Master Spanish from beginner to advanced with our interactive, gamified learning experience. Start your journey today!</p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <span>10,000+ Learners</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-star"></i>
+                            <span>4.9/5 Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>500+ Lessons</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-lg start-btn" onclick="startLearning()">
+                        <i class="fas fa-play"></i> Start Learning
+                    </button>
+                    <div class="mt-3">
+                        <small class="text-white-50">Create an account to save your progress and track your achievements!</small>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <div class="floating-card card-1">
+                            <i class="fas fa-comments"></i>
+                            <span>¡Hola!</span>
+                        </div>
+                        <div class="floating-card card-2">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Learn</span>
+                        </div>
+                        <div class="floating-card card-3">
+                            <i class="fas fa-medal"></i>
+                            <span>Win</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section id="modules" class="modules-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2>Choose Your Learning Path</h2>
+                <p>Select the level that matches your current Spanish skills</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="module-card beginner" onclick="openModule('beginner')">
+                        <div class="module-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h3>Beginner</h3>
+                        <p>Perfect for those starting their Spanish journey. Learn basic greetings, numbers, and everyday phrases.</p>
+                        <div class="module-progress">
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0% Complete</span>
+                        </div>
+                        <div class="module-stats">
+                            <span><i class="fas fa-book"></i> 20 Lessons</span>
+                            <span><i class="fas fa-clock"></i> 2-3 hours</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="module-card intermediate" onclick="openModule('intermediate')">
+                        <div class="module-icon">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <h3>Intermediate</h3>
+                        <p>Build on your foundation with grammar, verb conjugations, and more complex conversations.</p>
+                        <div class="module-progress">
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0% Complete</span>
+                        </div>
+                        <div class="module-stats">
+                            <span><i class="fas fa-book"></i> 25 Lessons</span>
+                            <span><i class="fas fa-clock"></i> 3-4 hours</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="module-card advanced" onclick="openModule('advanced')">
+                        <div class="module-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h3>Advanced</h3>
+                        <p>Master advanced grammar, idioms, and cultural nuances to speak like a native.</p>
+                        <div class="module-progress">
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0% Complete</span>
+                        </div>
+                        <div class="module-stats">
+                            <span><i class="fas fa-book"></i> 30 Lessons</span>
+                            <span><i class="fas fa-clock"></i> 4-5 hours</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Progress Section -->
+    <section id="progress" class="progress-section" role="region" aria-label="Your Learning Progress">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2>Your Learning Progress</h2>
+                <p>Track your achievements and stay motivated</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="progress-overview">
+                        <div class="overall-progress">
+                            <h3>Overall Progress</h3>
+                            <div class="progress-container">
+                                <div class="progress-circle">
+                                    <div class="progress-circle-inner">
+                                        <span class="progress-percentage">0%</span>
+                                        <div class="progress-details">
+                                            <span class="progress-lessons">0/75</span>
+                                            <span class="progress-label">Lessons</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progress-info">
+                                    <div class="progress-stat">
+                                        <i class="fas fa-book"></i>
+                                        <div>
+                                            <span class="stat-number">0</span>
+                                            <span class="stat-text">Completed</span>
+                                        </div>
+                                    </div>
+                                    <div class="progress-stat">
+                                        <i class="fas fa-clock"></i>
+                                        <div>
+                                            <span class="stat-number">0</span>
+                                            <span class="stat-text">Hours</span>
+                                        </div>
+                                    </div>
+                                    <div class="progress-stat">
+                                        <i class="fas fa-star"></i>
+                                        <div>
+                                            <span class="stat-number">0</span>
+                                            <span class="stat-text">XP Earned</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievements">
+                            <h3>Recent Achievements</h3>
+                            <div class="achievement-list" id="achievementList">
+                                <div class="achievement-item locked" data-achievement="firstLesson">
+                                    <i class="fas fa-lock"></i>
+                                    <span>First Lesson</span>
+                                </div>
+                                <div class="achievement-item locked" data-achievement="perfectScore">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Perfect Score</span>
+                                </div>
+                                <div class="achievement-item locked" data-achievement="weekStreak">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Week Streak</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="stats-card">
+                        <h3>Your Stats</h3>
+                        <div class="stat-item">
+                            <i class="fas fa-fire"></i>
+                            <div>
+                                <span class="stat-value">0</span>
+                                <span class="stat-label">Day Streak</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <span class="stat-value">0</span>
+                                <span class="stat-label">XP Earned</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-trophy"></i>
+                            <div>
+                                <span class="stat-value">0</span>
+                                <span class="stat-label">Lessons Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile" class="profile-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2>Your Profile</h2>
+                <p>Customize your learning experience</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Spanish Learner</h3>
+                        <p>Ready to master Spanish!</p>
+                        <div class="profile-settings">
+                            <button class="btn btn-outline-primary" onclick="resetProgress()">
+                                <i class="fas fa-redo"></i> Reset Progress
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="learning-goals">
+                        <div class="goals-header">
+                            <h3>Your Learning Goals</h3>
+                            <div class="goals-actions">
+                                <button class="btn btn-primary btn-sm" onclick="addGoal()">
+                                    <i class="fas fa-plus"></i> Add Goal
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="resetProgress()">
+                                    <i class="fas fa-refresh"></i> Reset Progress
+                                </button>
+                                <span class="goals-progress" id="goalsProgress">0/5 Goals Completed</span>
+                            </div>
+                        </div>
+                        
+                        <div class="goal-list" id="goalsContainer">
+                            <!-- Goals will be dynamically generated here -->
+                        </div>
+                        
+                        <div class="goals-summary">
+                            <div class="summary-item">
+                                <i class="fas fa-trophy"></i>
+                                <span>Goals Completed: <strong>0</strong></span>
+                            </div>
+                            <div class="summary-item">
+                                <i class="fas fa-fire"></i>
+                                <span>Current Streak: <strong>0 days</strong></span>
+                            </div>
+                            <div class="summary-item">
+                                <i class="fas fa-star"></i>
+                                <span>Total XP: <strong>0</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lesson Modal -->
+    <div class="modal fade" id="lessonModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lessonTitle">Lesson Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="lessonContent">
+                        <!-- Lesson content will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="nextLessonBtn" onclick="nextLesson()">Next Lesson</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div class="modal fade" id="aiChatModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Spanish Practice Chat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message ai-message">
+                                <div class="message-content">
+                                    ¡Hola! I'm your Spanish practice partner. How can I help you today?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chatInput" placeholder="Type your message in Spanish..." class="form-control">
+                            <button class="btn btn-primary" onclick="sendChatMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login to EspanolPro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Don't have an account? <a href="#" onclick="switchToSignup()">Sign up here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal fade" id="signupModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Your Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm">
+                        <div class="mb-3">
+                            <label for="signupName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="signupName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="signupEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signupPassword" required minlength="6">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">I agree to the <a href="#" onclick="showTerms()">Terms of Service</a></label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <a href="#" onclick="switchToLogin()">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Account Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="settingsForm">
+                        <div class="mb-3">
+                            <label for="settingsName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="settingsName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="settingsEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="settingsEmail" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="settingsNewPassword" class="form-label">New Password (leave blank to keep current)</label>
+                            <input type="password" class="form-control" id="settingsNewPassword" minlength="6">
+                        </div>
+                        <div class="mb-3">
+                            <label for="settingsConfirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="settingsConfirmPassword">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="settingsDarkMode">
+                            <label class="form-check-label" for="settingsDarkMode">Enable Dark Mode</label>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="settingsSound">
+                            <label class="form-check-label" for="settingsSound">Enable Sound</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>EspanolPro</h5>
+                    <p>Learn Spanish the fun way with interactive lessons and gamified learning.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2025 EspanolPro. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
